@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.easyhao.micro.personnel.mapper.SysEmpMapper">
+
+    <resultMap id="SysEmpResultMap" type="com.easyhao.micro.personnel.entity.SysEmp">
+        <id column="emp_id" property="empId"/>
+        <result column="dept_id" property="deptId"/>
+        <result column="emp_name" property="empName"/>
+        <result column="gender" property="gender"/>
+        <result column="birthday" property="birthday"/>
+        <result column="native_place" property="nativePlace"/>
+        <result column="nation" property="nation"/>
+        <result column="id_card" property="idCard"/>
+        <result column="phone" property="phone"/>
+        <result column="email" property="email"/>
+        <result column="degree" property="degree"/>
+        <result column="position" property="position"/>
+        <result column="work_time" property="workTime"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_time" property="updateTime"/>
+    </resultMap>
+
+    <resultMap id="selectEmpListMap" type="SysEmp" extends="SysEmpResultMap">
+        <association property="dept" javaType="com.easyhao.micro.personnel.entity.SysDept">
+            <result column="dept_name" property="deptName"/>
+        </association>
+    </resultMap>
+
+    <select id="selectEmpList" resultMap="selectEmpListMap" parameterType="SysEmp">
+        select emp.*,dept.dept_name from sys_emp emp
+        inner join sys_dept dept on emp.dept_id=dept.dept_id
+        <where>
+            <if test="empName != null and empName != ''">
+                emp.emp_name like concat('%',#{empName},'%')
+            </if>
+            <if test="dept !=null and dept.deptName != null and dept.deptName != ''">
+                and dept.dept_name like concat('%',#{dept.deptName},'%')
+            </if>
+            <if test="gender != null and gender != ''">
+                and emp.gender=#{gender}
+            </if>
+        </where>
+    </select>
+
+    <delete id="deleteEmpById">
+        delete from sys_emp where emp_id=#{empId}
+    </delete>
+
+    <insert id="insertEmp" parameterType="SysEmp">
+        insert into sys_emp values
+        (
+            null,#{deptId},#{empName},#{gender},
+            #{birthday},#{nativePlace},#{nation},#{idCard},
+            #{phone},#{email},#{degree},#{position},#{workTime},now(),now()
+        );
+    </insert>
+
+    <update id="updateEmp" parameterType="SysEmp">
+        update sys_emp set
+        dept_id=#{deptId},emp_name=#{empName},gender=#{gender},
+        birthday=#{birthday},native_place=#{nativePlace},nation=#{nation},id_card=#{idCard},
+        phone=#{phone},email=#{email},degree=#{degree},position=#{position},
+        work_time=#{workTime},update_time=now()
+        where emp_id=#{empId};
+    </update>
+
+    <insert id="insertEmpList">
+        insert into sys_emp values
+        <foreach collection="emps" item="emp" separator=",">
+            (
+            null,
+            #{emp.deptId},#{emp.empName},#{emp.gender},
+            #{emp.birthday},#{emp.nativePlace},#{emp.nation},
+            #{emp.idCard},#{emp.phone},#{emp.email},
+            #{emp.degree},#{emp.position},#{emp.workTime},
+            #{emp.createTime},#{emp.updateTime}
+            )
+        </foreach>
+    </insert>
+</mapper>

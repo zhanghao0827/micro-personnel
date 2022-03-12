@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.easyhao.micro.personnel.mapper.SerNoticeMapper">
+
+    <resultMap id="SerNoticeResult" type="com.easyhao.micro.personnel.entity.SerNotice">
+        <id column="notice_id" property="noticeId"/>
+        <result column="notice_title" property="noticeTitle"/>
+        <result column="notice_type" property="noticeType"/>
+        <result column="notice_content" property="noticeContent"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_time" property="updateTime"/>
+    </resultMap>
+
+    <sql id="SerNoticeColumnAll">
+        notice_title,notice_type,notice_id,notice_content,create_time,update_time
+    </sql>
+
+    <select id="selectNoticeList" resultMap="SerNoticeResult">
+        select
+        <include refid="SerNoticeColumnAll"/>
+        from ser_notice
+        <where>
+            <if test="noticeTitle != null and noticeTitle != ''">
+                notice_title like concat('%',#{noticeTitle},'%')
+            </if>
+            <if test="noticeType != null and noticeType != ''">
+                and notice_type=#{noticeType}
+            </if>
+        </where>
+    </select>
+
+    <insert id="insertNotice">
+        insert into ser_notice values (null,#{noticeTitle},#{noticeType},#{noticeContent},now(),now())
+    </insert>
+
+    <delete id="deleteNoticeById">
+        delete from ser_notice where notice_id=#{noticeId}
+    </delete>
+
+    <update id="updateNotice">
+        update ser_notice set notice_title=#{noticeTitle},notice_type=#{noticeType},notice_content=#{noticeContent},update_time=now() where notice_id=#{noticeId};
+    </update>
+
+
+</mapper>

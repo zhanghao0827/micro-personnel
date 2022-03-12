@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.easyhao.micro.personnel.mapper.SysUserMapper">
+
+    <resultMap id="SysUserResult" type="SysUser">
+        <id column="user_id" property="userId"/>
+        <result column="user_name" property="userName"/>
+        <result column="nick_name" property="nickName"/>
+        <result column="password" property="password"/>
+        <result column="email" property="email"/>
+        <result column="phone" property="phone"/>
+        <result column="avatar" property="avatar"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_time" property="updateTime"/>
+        <result column="enabled" property="enabled"/>
+        <result column="del_flag" property="delFlag"/>
+    </resultMap>
+
+    <sql id="SysUserAllColumn">
+        user_id,user_name,nick_name,password,email,phone,avatar,create_time,update_time,enabled,del_flag
+    </sql>
+
+    <select id="selectUserByUsername" resultMap="SysUserResult">
+        select <include refid="SysUserAllColumn"/> from sys_user where user_name=#{username} and del_flag=0
+    </select>
+
+    <update id="updateUserAvatar" parameterType="SysUser">
+        update sys_user set avatar=#{avatar},update_time=now() where user_id=#{userId}
+    </update>
+
+    <resultMap id="selectUserCollectionRole" type="SysUser" extends="SysUserResult">
+        <collection property="roles" ofType="com.easyhao.micro.personnel.entity.SysRole">
+            <id column="role_id" property="roleId"/>
+            <result column="role_name" property="roleName"/>
+            <result column="role_key" property="roleKey"/>
+            <result column="role_del_flag" property="delFlag"/>
+        </collection>
+    </resultMap>
+
+    <select id="selectUserCollectionRole" resultMap="selectUserCollectionRole">
+        select u.*,
+        r.role_id as role_id,
+        r.role_name as role_name,
+        r.role_key as role_key,
+        r.del_flag as role_del_flag
+        from sys_user u
+        left join sys_user_role ur on u.user_id=ur.user_id
+        left join sys_role r on ur.role_id=r.role_id
+    </select>
+
+    <update id="updateUserEnabled">
+        update sys_user set enabled=#{enabled} where user_id=#{userId}
+    </update>
+
+    <insert id="insertUser" useGeneratedKeys="true" keyProperty="userId">
+        insert into sys_user values (null,#{userName},#{nickName},#{password},#{email},#{phone},#{avatar},now(),now(),1,0)
+    </insert>
+
+    <update id="updateUserPassword">
+        update sys_user set password=#{password},update_time=now() where user_id=#{userId}
+    </update>
+
+    <select id="selectUsersByPasswordExpired" resultMap="SysUserResult">
+        select <include refid="SysUserAllColumn"/> from sys_user where DATEDIFF(NOW(),update_time)>30
+    </select>
+
+    <update id="updateUser">
+        update sys_user set user_name=#{userName},nick_name=#{nickName},email=#{email},phone=#{phone},update_time=now() where user_id=#{userId}
+    </update>
+
+    <select id="selectUsersExceptSelf" resultMap="SysUserResult">
+        select <include refid="SysUserAllColumn"/> from sys_user where user_id!=#{userId}
+    </select>
+
+</mapper>

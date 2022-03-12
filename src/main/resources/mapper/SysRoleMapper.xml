@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.easyhao.micro.personnel.mapper.SysRoleMapper">
+
+    <resultMap id="SysRoleResult" type="com.easyhao.micro.personnel.entity.SysRole">
+        <id column="role_id" property="roleId"/>
+        <result column="role_name" property="roleName"/>
+        <result column="role_key" property="roleKey"/>
+        <result column="del_flag" property="delFlag"/>
+    </resultMap>
+
+    <sql id="SysRoleColumnAll">
+        role_id,role_name,role_key,del_flag
+    </sql>
+
+    <select id="selectRolesByUserId" resultMap="SysRoleResult">
+        select r.* from sys_role r inner join sys_user_role ur on r.role_id=ur.role_id where ur.user_id=#{id}
+    </select>
+
+    <select id="selectRoleAll" resultMap="SysRoleResult">
+        select <include refid="SysRoleColumnAll"/> from sys_role where del_flag=0
+    </select>
+    
+    <insert id="insertRole">
+        insert into sys_role values (null,#{roleName},#{roleKey},0)
+    </insert>
+
+    <update id="deleteRoleById">
+        update sys_role set del_flag=1 where role_id=#{roleId}
+    </update>
+
+    <update id="updateRole">
+        update sys_role set role_name=#{roleName},role_key=#{roleKey} where role_id=#{roleId} and del_flag=0
+    </update>
+</mapper>

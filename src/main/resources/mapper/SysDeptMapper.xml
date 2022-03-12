@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.easyhao.micro.personnel.mapper.SysDeptMapper">
+
+    <resultMap id="SysDeptResult" type="SysDept">
+        <id column="dept_id" property="deptId"/>
+        <result column="parent_id" property="parentId"/>
+        <result column="ancestors" property="ancestors"/>
+        <result column="dept_name" property="deptName"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_time" property="updateTime"/>
+    </resultMap>
+
+    <resultMap id="selectDeptAll" type="SysDept" extends="SysDeptResult">
+        <collection property="children" ofType="SysDept" select="selectDeptAll" column="dept_id"/>
+    </resultMap>
+
+    <select id="selectDeptAll" resultMap="selectDeptAll">
+        select * from sys_dept where parent_id=#{deptId}
+    </select>
+
+    <insert id="insertDept" parameterType="SysDept" useGeneratedKeys="true" keyProperty="deptId">
+        insert into sys_dept values (null,#{parentId},#{ancestors},#{deptName},now(),now());
+    </insert>
+
+    <delete id="deleteDeptById">
+        delete from sys_dept where dept_id=#{deptId}
+    </delete>
+    
+    <update id="updateDept">
+        update sys_dept set dept_name=#{deptName},update_time=now() where dept_id=#{deptId};
+    </update>
+
+    <select id="hasEmpByDeptId" resultType="int">
+        select count(dept.dept_id) from sys_dept dept inner join sys_emp emp on emp.dept_id=dept.dept_id and dept.dept_id=#{deptId};
+    </select>
+
+    <resultMap id="selectDeptIdAndDeptName" type="SysDept">
+        <result column="dept_id" property="deptId"/>
+        <result column="dept_name" property="deptName"/>
+    </resultMap>
+
+    <select id="selectDeptIdAndDeptName" resultMap="selectDeptIdAndDeptName">
+        select dept.dept_id,dept.dept_name from sys_dept dept;
+    </select>
+
+    <select id="selectDeptIdByDeptName" resultType="java.lang.Long">
+        select dept_id from sys_dept where dept_name=#{deptName};
+    </select>
+
+</mapper>
