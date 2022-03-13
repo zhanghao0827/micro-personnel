@@ -11,8 +11,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 public class SendSms {
 
     private static final String RegionId = "cn-hangzhou";
-    private static final String AccessKeyID = "LTAI4G3BAgjg2az6FXq5tdPX";
-    private static final String AccessKeySecret = "q0M8CkqqFaJWrEHDPFgZeKZWvVxJyF";
+    private static final String AccessKeyID = "xxxxxxxxxxxxxx";
+    private static final String AccessKeySecret = "xxxxxxxxxxxxx";
 
     public static SmsBean sendSms(String PhoneNumber, String templateParam) {
         DefaultProfile profile = DefaultProfile.getProfile(RegionId, AccessKeyID, AccessKeySecret);
