@@ -1,8 +1,10 @@
 # 员工管理系统
 
->演示：http://120.48.10.133:8888/index.html
+>**演示**：http://120.48.10.133:8888/index.html
 >
 >**前端项目地址**：https://github.com/zhanghao0827/micro-personnel-ui
+>
+>**个人主页**：https://hao2coding.gitee.io/icoding
 
 ## 介绍
 
